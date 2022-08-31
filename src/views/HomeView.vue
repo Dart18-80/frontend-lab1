@@ -18,6 +18,7 @@ export default {
   data() {
     return {
       csv: null,
+      arregloGeneral: [],
     };
   },
   methods: {
@@ -30,16 +31,34 @@ export default {
         let splitSaltosDeLinea = listNodos.split(/\r\n|\r|\n/, -1);
         const ArrayOperacionObjeto = [];
         splitSaltosDeLinea.forEach( element =>{
-          let NewElement = element.split(";")
-          let ObjectInsert = {
-            Operacion: NewElement[0],
-            Persona: JSON.parse(NewElement[1])
+          if(element != ""){
+            let NewElement = element.split(";")
+            let ObjectInsert = {
+              Operacion: NewElement[0],
+              Persona: JSON.parse(NewElement[1])
+            }
+            ArrayOperacionObjeto.push(ObjectInsert)
           }
-          ArrayOperacionObjeto.push(ObjectInsert)
         })
-        console.log(ArrayOperacionObjeto)
+        this.arregloGeneral = ArrayOperacionObjeto;
+        this.cargarArbol();
       };
       reader.readAsText(file);
+    },
+    cargarArbol(){
+      this.arregloGeneral.forEach(line => {
+        if(line.Operacion == "INSERT"){
+          console.log(line.Persona)
+          this.$store.dispatch('ADDNODE', line.Persona )     
+        }
+        else if (line.Operacion == "DELETE"){
+          console.log(line.Persona)
+          this.$store.dispatch('DELETENODE', line.Persona )
+        }
+        else if (line.Operacion == "PATCH"){
+
+        }
+      })
     }
   }
 }
